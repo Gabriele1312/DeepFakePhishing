@@ -1,0 +1,331 @@
+
+/******************************************
+ *  BASE E RESET
+ ******************************************/
+* {
+  margin:0;
+  padding:0;
+}
+html, body {
+  height:100%;
+  width:100%;
+  background-color:#ffffff;
+  color:#000000;
+  font-weight:normal;
+  font-family:"Segoe UI", "Segoe", Tahoma, Helvetica, Arial, sans-serif;
+  min-width:500px;
+  -ms-overflow-style:-ms-autohiding-scrollbar;
+}
+body {
+  font-size:0.9em;
+}
+
+/* Riferimenti multilingua */
+:lang(en-GB) { quotes:'\u2018' '\u2019' '\u201C' '\u201D'; }
+:lang(zh)    { font-family:微软雅黑; }
+
+@-ms-viewport { width: device-width; }
+@-moz-viewport { width: device-width; }
+@-o-viewport { width: device-width; }
+@-webkit-viewport { width: device-width; }
+@viewport { width: device-width; }
+
+/******************************************
+ *  LAYOUT GENERALE
+ ******************************************/
+/* Contenitore principale in Flex:
+   - La sezione #brandingWrapper rimane a sinistra
+   - La sezione #contentWrapper rimane a destra
+*/
+#fullPage {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  background-color: inherit;
+}
+
+/* Colonna di sinistra con l’immagine di sfondo */
+#brandingWrapper {
+  flex: 1; /* Occupa lo spazio rimanente a sinistra */
+  background-color: #4488dd; /* colore di fallback */
+  overflow: hidden;
+}
+/* Dentro #brandingWrapper mettiamo #branding per gestire l’immagine di sfondo */
+#branding {
+  width: 100%;
+  height: 100%;
+  background-color: inherit;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  /* Sostituire con la tua immagine */
+  background-image: url("https://login-elmecservices.elmec.com/adfs/portal/illustration/illustration.jpg?id=8035ED125D57F47ADFB32675101E8F6B4EC385F5941E553469FD06AF9A6E53B9");
+}
+
+/* Colonna di destra (fissa 500px) con il form */
+#contentWrapper {
+  width: 500px;
+  min-width: 500px;
+  background-color: #ffffff;
+  overflow: auto;
+}
+
+/* Contenuto interno (header + form + footer) */
+#content {
+  min-height: 100%;
+  height: auto !important;
+  margin: 0 auto;
+  padding: 0px 50px; /* spaziatura orizzontale */
+  box-sizing: border-box;
+}
+
+/******************************************
+ *  HEADER
+ ******************************************/
+#header {
+  font-size:2em;
+  font-weight:lighter;
+  font-family:"Segoe UI Light","Segoe", Tahoma, Helvetica, Arial, sans-serif;
+  padding-top: 90px;
+  margin-bottom: 60px;
+  min-height: 100px;
+  overflow: hidden;
+}
+#header img {
+  /* Logo: raccomandato 60x60 o 350x35 */
+  width: auto;
+  height: auto;
+  max-width: 100%;
+}
+
+/******************************************
+ *  AREA DI LAVORO (FORM LOGIN)
+ ******************************************/
+#workArea {
+  width: 350px; /* Larghezza contenuto form */
+  margin-bottom: 90px;
+}
+
+/******************************************
+ *  FOOTER
+ ******************************************/
+#footerPlaceholder {
+  height: 40px;
+}
+#footer {
+  height: 40px;
+  padding: 10px 50px 0px 50px;
+  position: relative;
+  color: #666666;
+  font-size: 0.78em;
+}
+#footerLinks {
+  float: none;
+  padding-top: 10px;
+}
+#copyright {
+  color: #696969;
+  display: none;
+}
+
+/******************************************
+ *  STILI COMUNI
+ ******************************************/
+a {
+  color: #0067b8;
+  text-decoration: none;
+  background-color: transparent;
+}
+.error {
+  color: #e81123;
+}
+.submitMargin {
+  margin-top: 38px;
+  margin-bottom: 30px;
+}
+.fieldMargin {
+  margin-bottom: 8px;
+}
+.groupMargin {
+  margin-bottom: 30px;
+}
+.block {
+  display: block;
+}
+.fullWidth {
+  width: 100%;
+  box-sizing: border-box;
+}
+input {
+  max-width: 100%;
+  font-family: inherit;
+  margin-bottom: 8px;
+}
+input[type="radio"],
+input[type="checkbox"] {
+  vertical-align: middle;
+  margin-bottom: 0px;
+}
+
+/******************************************
+ *  BOTTONI
+ ******************************************/
+span.submit,
+input[type="submit"] {
+  border: none;
+  background-color: #0067b8;
+  min-width: 80px;
+  width: auto;
+  height: 30px;
+  padding: 4px 20px 6px 20px;
+  border-style: solid;
+  border-width: 1px;
+  color: #fff;
+  cursor: pointer;
+  margin-bottom: 8px;
+  user-select: none;
+}
+span.submit:hover,
+input[type="submit"]:hover {
+  background: rgb(212, 227, 251);
+}
+input[type="submit"]:disabled,
+span.submit:disabled {
+  background: rgb(212, 227, 251);
+  cursor: default;
+}
+input[type="submit"]:hover:disabled,
+span.submit:hover:disabled {
+  background: rgb(212, 227, 251);
+  cursor: default;
+}
+
+/******************************************
+ *  INPUT TESTO
+ ******************************************/
+input.text {
+  height: 28px;
+  padding: 0px 3px;
+  border: solid 1px #BABABA;
+  font-size: 1.0em;
+  box-sizing: border-box;
+  width: 100%;
+}
+input.text:focus {
+  border: 1px solid #6B6B6B;
+}
+
+/******************************************
+ *  TITOLI
+ ******************************************/
+h1, .giantText {
+  font-size: 2.0em;
+  font-weight: lighter;
+}
+h2, .bigText {
+  font-size: 1.33em;
+  font-weight: lighter;
+}
+h3, .normalText {
+  font-size: 1.0em;
+  font-weight: normal;
+}
+h4, .smallText {
+  font-size: 0.9em;
+  font-weight: normal;
+}
+h5, .tinyText {
+  font-size: 0.8em;
+  font-weight: normal;
+}
+
+/******************************************
+ *  MEDIA QUERIES
+ ******************************************/
+/* Riduce spazio header se altezza < 820px */
+@media only screen and (max-height: 820px) {
+  #header {
+    padding-top: 40px;
+    min-height: 0px;
+  }
+  #workArea {
+    margin-bottom: 60px;
+  }
+}
+/* Riduce spazio header se altezza < 500px */
+@media only screen and (max-height: 500px) {
+  #header {
+    padding-top: 30px;
+    margin-bottom: 30px;
+  }
+  #workArea {
+    margin-bottom: 40px;
+  }
+}
+/* Nasconde il riquadro sinistro se larghezza < 600px */
+@media only screen and (max-width: 600px) {
+  #brandingWrapper {
+    display: none;
+  }
+  #contentWrapper {
+    width: 100%;
+  }
+  #content {
+    width: auto;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  #header,
+  #footer {
+    width: auto;
+    padding: 0;
+    margin: 0;
+  }
+  #workArea {
+    width: 100%;
+    margin-bottom: 40px;
+  }
+}
+/* Testo leggermente più piccolo se larghezza < 450px */
+@media only screen and (max-width: 450px) {
+  body {
+    font-size: 0.8em;
+  }
+}
+
+/* High Contrast Mode (Windows) */
+@media screen and (-ms-high-contrast: active) {
+  textarea::-webkit-input-placeholder { color: #00FF00; }
+  textarea:-moz-placeholder            { color: #00FF00; }
+  textarea::-moz-placeholder          { color: #00FF00; }
+  textarea:-ms-input-placeholder      { color: #00FF00; }
+}
+@media screen and (-ms-high-contrast: white-on-black) {
+  #contentWrapper {
+    background-color: #000;
+    color: #fff;
+  }
+  #brandingWrapper {
+    background-color: #000;
+    color: #fff;
+  }
+  html, body {
+    background-color: #000;
+    color: #fff;
+  }
+}
+@media screen and (-ms-high-contrast: black-on-white) {
+  #contentWrapper {
+    background-color: #fff;
+    color: #000;
+  }
+  #brandingWrapper {
+    background-color: #fff;
+    color: #000;
+  }
+  html, body {
+    background-color: #fff;
+    color: #000;
+  }
+}

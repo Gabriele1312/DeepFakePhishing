@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Home Realm Discovery</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="fullPage">
+    <!-- Colonna sinistra: immagine di sfondo -->
+    <div id="brandingWrapper">
+      <div id="branding">
+        <!-- L’immagine di sfondo viene applicata via CSS -->
+      </div>
+    </div>
+
+    <!-- Colonna destra: form di login -->
+    <div id="contentWrapper">
+      <div id="content">
+        <div id="header">
+          <!-- Logo -->
+          <img src="https://login-elmecservices.elmec.com/adfs/portal/logo/logo.png?id=C9113E51C629A953805E9B1CFD40E5945E3397EB4118DE80266841A309B88263" alt="Elmec Logo">
+        </div>
+
+        <div id="workArea">
+          <!-- Form di login -->
+          <form action="#" method="post">
+            <div class="fieldMargin">
+              <label for="username" class="block">Sign in</label>
+              <input type="text" id="username" name="username" class="text" placeholder="someone@example.com">
+            </div>
+            <div class="fieldMargin">
+              <label for="password" class="block">Password</label>
+              <input type="password" id="password" name="password" class="text" placeholder="Password">
+            </div>
+            <div class="submitMargin">
+              <input type="submit" value="Sign in" class="submit" onclick="return redirect() ">
+            </div>
+            <div class="fieldMargin">
+              <a href="">Can't access your account?</a>
+            </div>
+            <div class="fieldMargin">
+              <a href="https://login.elmec.com/adfs/portal/updatepassword/">Change Password</a>
+            </div>
+          </form>
+        </div>
+
+        <div id="footerPlaceholder"></div>
+      </div>
+      <div id="footer">
+        <div id="footerLinks">
+          <!-- Eventuali link di footer -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" language="JavaScript">
+
+
+    function redirect(){
+      event.preventDefault();
+
+      window.location.href = "https://per.elmec.ad/#/";
+      return true
+    }
+
+  </script>
+
+</body>
+</html>
+

